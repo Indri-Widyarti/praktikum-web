@@ -3,6 +3,7 @@
 * Fungsi utama untuk menangani pengolahan data
 * @param string root parameter menu
 */
+
 function data_handler($root) {
 if (isset($_GET['act']) && $_GET['act'] == 'add') {
 data_editor($root);
@@ -28,14 +29,19 @@ data_detail($root, $_GET['id'], 1);
 show_admin_data($root);
 }
 break;
+
 case 'del':
 if (isset($_GET['id']) && ctype_digit($_GET['id'])) {
 // Key untuk penghapusan data
 $id = $_GET['id'];
 // Lengkapi pernyataan SQL hapus data
-$res = mysql_query($sql);
+	$sql = "delete from mahasiswa where nim = '$id'";
+	mysql_query($sql);
+	$res = mysql_query($sql);
 if ($res) { ?>
-// Lengkapi script untuk redireksi ke root
+<script type="text/javascript">
+document.location.href="<?php echo $root;?>";
+</script>
 <?php
 } else {
 echo 'Gagal menghapus data';
@@ -55,6 +61,7 @@ show_admin_data($root);
 echo 'Data Tidak Ditemukan';
 }
 }
+
 /**
 * Fungsi untuk menampilkan menu administrasi
 * @param string root parameter menu
@@ -101,6 +108,8 @@ Edit</a> |
 <!--
 Lengkapi kode PHP untuk membuat link hapus data
 -->
+</a><a href="<?php echo $root;?>&amp;act=del&amp;id=<?php echo $id;?>" onclick="return confirm('Hapus data dengan <? echo $id ; echo ' ( '.$row[1].' )'?>?')">
+Hapus</a> |
 </td>
 </tr>
 <?php
@@ -155,6 +164,7 @@ echo 'Data Tidak Ditemukan';
 @mysql_close($res);
 }
 }
+
 /**
 * Fungsi untuk menghasilkan form penambahan/pengubahan
 * @param string root parameter menu
@@ -166,8 +176,13 @@ if (isset($_POST['nim']) && $_POST['nim'] ) {
 // Jika tidak disertai id, berarti insert baru
 if (!$id) {
 // Lengkapi Pernyataan PHP SQL untuk INSERT data
-$sql = "insert into mahasiswa values ('".$_POST["nim"]."', '".$_POST["nama"]."', '".$_POST["alamat"]."')";
-$res = mysql_query($sql);
+$nim = @$_POST['nim'];
+$nama = @$_POST['nama'];
+$alamat = @$_POST['alamat'];
+
+	$sql = "INSERT INTO mahasiswa VALUES ('" .$nim. "', '" .$nama. "', '" .$alamat. "' )";
+	$res = mysql_query($sql);
+
 if ($res) { ?>
 <script type="text/javascript">
 document.location.href="<?php echo $root;?>";
@@ -178,8 +193,11 @@ echo 'Gagal menambah data';
 }
 } else {
 // Lengkapi Pernyataan PHP SQL untuk UPDATE data
-$sql = "UPDATE mahasiswa SET nama='".$_POST["nama"]."', alamat='".$_POST["alamat"]."' WHERE nim=" .$id;
-$res = mysql_query($sql);
+	$nim = @$_POST['nim'];
+	$nama = @$_POST['nama'];
+	$alamat = @$_POST['alamat'];
+	$sql = "UPDATE mahasiswa SET nama = '$nama', alamat = '$alamat' WHERE nim = '$nim'";
+	$res = mysql_query($sql);
 if ($res) { ?>
 <script type="text/javascript">
 document.location.href="<?php echo $root;?>";
@@ -218,7 +236,7 @@ $alamat = @$_POST['alamat'];
 <table border=1 cellpadding=4 cellspacing=0>
 <tr>
 <td width=100>NIM*</td>
-<td> <input type="text" name="nim" size=10
+<td> <input type="text" name="nim" size=12
 value="<?php echo $nim;?>" /> </td>
 </tr>
 <tr>
@@ -244,3 +262,4 @@ onclick="history.go(-1)" /></td>
 }
 return false;
 }
+?>
